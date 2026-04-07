@@ -25,47 +25,56 @@ def train_and_save_model():
         "Destination": "destination"
     })
 
-    # 🔥 FIX: Use INDIA row (since dataset is country-based)
+    # Use INDIA data
     india_data = cost[cost["Country_name"] == "India"].iloc[0]
 
     cost_of_living = india_data["Cost_of _living(CL)"]
-    ticket_price = india_data["Ticket_price"]
 
-    # Convert to usable values
-    food_per_day = cost_of_living / 30
-    rent = cost_of_living * 0.4  # simulate rent
+    # Adjusted realistic values
+    food_per_day = (cost_of_living / 30) * 0.7
+    rent = cost_of_living * 0.2  # reduced dominance
 
     trips = []
 
     for _, row in bus.iterrows():
+
         duration = random.randint(2, 7)
         people = random.randint(1, 5)
         accom = random.choice(["budget", "mid", "luxury"])
         activities = random.randint(0, 3)
         mode = random.choice(["bus", "train", "flight"])
 
+        # NEW: distance feature
+        distance = random.randint(100, 2000)
+
         # Travel mode multiplier
-        multiplier = {
+        mode_multiplier = {
             "bus": 1.0,
             "train": 1.5,
             "flight": 3.0
         }[mode]
 
-        # Costs
+        # Accommodation
         accom_cost = (rent / 30) * duration * people * {
             "budget": 0.5,
             "mid": 1.0,
             "luxury": 2.0
         }[accom]
 
+        # Food
         food_cost = food_per_day * duration * people
+
+        # Activities
         activity_cost = activities * 1000
 
-        base_travel = row["travel_cost"]
-        travel_cost = base_travel * multiplier * people
+        # Travel (based on distance)
+        travel_cost = distance * 2 * mode_multiplier * people
 
-        # Add realism noise
-        total_cost = (accom_cost + food_cost + activity_cost + travel_cost) * random.uniform(0.9, 1.1)
+        # Total cost
+        total_cost = accom_cost + food_cost + activity_cost + travel_cost
+
+        # Add noise (real-world variation)
+        total_cost = total_cost * random.uniform(0.85, 1.15)
 
         trips.append({
             "source": row["source"],
@@ -111,11 +120,10 @@ def train_and_save_model():
     # Save model
     joblib.dump(model, "trip_cost_model.pkl")
 
-    print("✅ Model trained and saved successfully!")
+    print("✅ Improved model trained and saved successfully!")
 
     return model
 
 
-# Run directly
 if __name__ == "__main__":
     train_and_save_model()
