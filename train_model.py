@@ -96,8 +96,8 @@ def train_and_save_model():
     model = Pipeline([
         ("preprocess", preprocessor),
         ("regressor", RandomForestRegressor(
-            n_estimators=100,
-            max_depth=15,
+            n_estimators=20,
+            max_depth=10,
             random_state=42,
             n_jobs=-1
         ))
