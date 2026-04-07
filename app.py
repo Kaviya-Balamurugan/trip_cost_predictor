@@ -3,15 +3,19 @@ import pandas as pd
 import joblib
 import os
 
+from train_model import train_and_save_model
+
 app = Flask(__name__)
 
 MODEL_PATH = "trip_cost_model.pkl"
 
-# ❌ REMOVE training from server
-if not os.path.exists(MODEL_PATH):
-    raise Exception("Model file not found. Train locally and upload smaller model.")
-
-model = joblib.load(MODEL_PATH)
+# ✅ Load OR train (safe version)
+if os.path.exists(MODEL_PATH):
+    print("Loading model...")
+    model = joblib.load(MODEL_PATH)
+else:
+    print("Training lightweight model...")
+    model = train_and_save_model()
 
 
 @app.route("/")
@@ -40,5 +44,7 @@ def predict():
         "total_cost": round(pred, 2),
         "cost_per_person": round(pred / int(data["num_people"]), 2)
     })
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
