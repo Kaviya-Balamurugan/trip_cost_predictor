@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 import pandas as pd
 import joblib
 import os
+from flask import render_template
 
 from train_model import train_and_save_model
 
@@ -48,3 +49,7 @@ def predict():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
+
+@app.route("/")
+def home():
+    return render_template("index.html")
