@@ -2,38 +2,98 @@
 <html>
 <head>
     <title>Trip Cost Predictor</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            padding: 30px 40px;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            width: 350px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            outline: none;
+        }
+
+        input:focus, select:focus {
+            border-color: #667eea;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        #result {
+            margin-top: 15px;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
 </head>
+
 <body>
 
-<h2>Trip Cost Predictor 🚀</h2>
+<div class="container">
+    <h2>Trip Cost Predictor 🚀</h2>
 
-<form id="tripForm">
-    Source: <input type="text" id="source"><br><br>
-    Destination: <input type="text" id="destination"><br><br>
-    Days: <input type="number" id="duration"><br><br>
-    People: <input type="number" id="people"><br><br>
+    <input type="text" id="source" placeholder="Source">
+    <input type="text" id="destination" placeholder="Destination">
+    <input type="number" id="duration" placeholder="Days">
+    <input type="number" id="people" placeholder="People">
 
-    Accommodation:
     <select id="accommodation">
         <option value="budget">Budget</option>
         <option value="mid">Mid</option>
         <option value="luxury">Luxury</option>
-    </select><br><br>
+    </select>
 
-    Travel Mode:
     <select id="mode">
         <option value="bus">Bus</option>
         <option value="train">Train</option>
         <option value="flight">Flight</option>
-    </select><br><br>
+    </select>
 
-    Activities: <input type="number" id="activities"><br><br>
-    Travel Cost: <input type="number" id="travel_cost"><br><br>
+    <input type="number" id="activities" placeholder="Activities">
+    <input type="number" id="travel_cost" placeholder="Travel Cost">
 
-    <button type="button" onclick="predict()">Predict</button>
-</form>
+    <button onclick="predict()">Predict Cost</button>
 
-<h3 id="result"></h3>
+    <div id="result"></div>
+</div>
 
 <script>
 async function predict() {
@@ -59,8 +119,7 @@ async function predict() {
     const result = await response.json();
 
     document.getElementById("result").innerText =
-        "Total Cost: ₹" + result.total_cost +
-        " | Per Person: ₹" + result.cost_per_person;
+        "₹ " + result.total_cost + " (₹ " + result.cost_per_person + " per person)";
 }
 </script>
 
