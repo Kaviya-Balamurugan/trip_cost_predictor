@@ -1,8 +1,7 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import pandas as pd
 import joblib
 import os
-from flask import render_template
 
 from train_model import train_and_save_model
 
@@ -10,7 +9,7 @@ app = Flask(__name__)
 
 MODEL_PATH = "trip_cost_model.pkl"
 
-# ✅ Load OR train (safe version)
+# Load or train
 if os.path.exists(MODEL_PATH):
     print("Loading model...")
     model = joblib.load(MODEL_PATH)
@@ -19,9 +18,10 @@ else:
     model = train_and_save_model()
 
 
+# ✅ ONLY ONE HOME ROUTE
 @app.route("/")
 def home():
-    return "Trip Cost Predictor Running 🚀"
+    return render_template("index.html")
 
 
 @app.route("/predict", methods=["POST"])
@@ -45,11 +45,3 @@ def predict():
         "total_cost": round(pred, 2),
         "cost_per_person": round(pred / int(data["num_people"]), 2)
     })
-
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
-
-@app.route("/")
-def home():
-    return render_template("index.html")
