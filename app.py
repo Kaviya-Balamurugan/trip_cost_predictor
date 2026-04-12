@@ -10,7 +10,6 @@ app = Flask(__name__)
 
 MODEL_PATH = "trip_cost_model.pkl"
 
-# Load or train model
 if os.path.exists(MODEL_PATH):
     print("Loading model...")
     model = joblib.load(MODEL_PATH)
@@ -19,19 +18,16 @@ else:
     model = train_and_save_model()
 
 
-# Home route (UI)
 @app.route("/")
 def home():
     return render_template("index.html")
 
 
-# Prediction API
 @app.route("/predict", methods=["POST"])
 def predict():
     try:
         data = request.get_json()
 
-        # ✅ Handle optional travel cost
         if data.get("travel_cost") in ["", None, 0]:
             # Estimate travel cost
             distance = random.randint(100, 2000)
@@ -46,7 +42,6 @@ def predict():
         else:
             estimated_travel = float(data.get("travel_cost"))
 
-        # Create dataframe
         trip = pd.DataFrame([{
             "source": data.get("source"),
             "destination": data.get("destination"),
@@ -58,7 +53,6 @@ def predict():
             "travel_cost": estimated_travel
         }])
 
-        # Prediction
         pred = model.predict(trip)[0]
 
         return jsonify({
