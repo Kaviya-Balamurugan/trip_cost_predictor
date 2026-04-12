@@ -10,27 +10,22 @@ from sklearn.ensemble import RandomForestRegressor
 
 
 def train_and_save_model():
-    # Load datasets
     bus = pd.read_csv("data/indian_bus_fare_dataset.csv")
     cost = pd.read_csv("data/cost_of_living.csv")
 
-    # Clean column names
     bus.columns = bus.columns.str.strip()
     cost.columns = cost.columns.str.strip()
 
-    # Rename bus columns
     bus = bus.rename(columns={
         "Fare Price (INR)": "travel_cost",
         "Source": "source",
         "Destination": "destination"
     })
 
-    # Use INDIA data
     india_data = cost[cost["Country_name"] == "India"].iloc[0]
 
     cost_of_living = india_data["Cost_of _living(CL)"]
 
-    # Adjusted realistic values
     food_per_day = (cost_of_living / 30) * 0.7
     rent = cost_of_living * 0.2  # reduced dominance
 
@@ -44,7 +39,6 @@ def train_and_save_model():
         activities = random.randint(0, 3)
         mode = random.choice(["bus", "train", "flight"])
 
-        # NEW: distance feature
         distance = random.randint(100, 2000)
 
         # Travel mode multiplier
@@ -54,26 +48,20 @@ def train_and_save_model():
             "flight": 3.0
         }[mode]
 
-        # Accommodation
         accom_cost = (rent / 30) * duration * people * {
             "budget": 0.5,
             "mid": 1.0,
             "luxury": 2.0
         }[accom]
 
-        # Food
         food_cost = food_per_day * duration * people
 
-        # Activities
         activity_cost = activities * 1000
 
-        # Travel (based on distance)
         travel_cost = distance * 2 * mode_multiplier * people
 
-        # Total cost
         total_cost = accom_cost + food_cost + activity_cost + travel_cost
 
-        # Add noise (real-world variation)
         total_cost = total_cost * random.uniform(0.85, 1.15)
 
         trips.append({
@@ -112,12 +100,10 @@ def train_and_save_model():
         ))
     ])
 
-    # Train
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
     model.fit(X_train, y_train)
 
-    # Save model
     joblib.dump(model, "trip_cost_model.pkl")
 
     print("✅ Improved model trained and saved successfully!")
